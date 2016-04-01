@@ -1,0 +1,41 @@
+{
+  "name": "project-name",
+  "version": "0.0.0",
+  "description": "Write your decription here",
+  "main": "lib/index.js",
+  "files": [
+    "!lib/tests/**/*.js",
+    "lib/**/*.js",
+    "lib/**/*.d.ts",
+    "gulpfile.js",
+    "src/**/*.ts",
+    "tests/**/*.ts",
+    "*.json",
+    "references.d.ts"
+  ],
+  "scripts": {
+    "prepublish": "in-publish && gulp build && gulp test || in-install",
+    "preinstall": "typings install && gulp build",
+    "test": "gulp test",
+    "watch": "gulp watch"
+  },
+  "license": "UNLICENSED",
+  "dependencies": {
+  },
+  "homepage": null,
+  "devDependencies": {
+    "chai": "^3.5.0",
+    "del": "^2.2.0",
+    "gulp": "^3.9.1",
+    "gulp-concat": "^2.6.0",
+    "gulp-mocha": "^2.2.0",
+    "gulp-tslint": "^4.3.4",
+    "gulp-typescript": "^2.12.1",
+    "mocha": "^2.4.5",
+    "source-map-support": "^0.4.0",
+    "tslint": "^3.6.0",
+    "typescript": "^1.8.9",
+    "in-publish": "^2.0.0"
+  },
+  "typings": "lib/index.d.ts"
+}

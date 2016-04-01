@@ -1,0 +1,16 @@
+{
+  "compilerOptions": {
+    "module": "umd",
+    "declaration": true,
+    "target": "es5",
+    "noEmitOnError": true,
+    "noImplicitAny": true,
+    "outDir": "../.tmp",
+    "rootDir": ".",
+    "sourceMap": false
+  },
+  "files": [
+    "../lib/**.d.ts",
+    "../references.d.ts"
+  ]
+}

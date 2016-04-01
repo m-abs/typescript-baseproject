@@ -1,0 +1,6 @@
+*.js
+node_modules
+built
+typings
+
+*.json*

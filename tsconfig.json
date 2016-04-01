@@ -1,0 +1,14 @@
+{
+  "compilerOptions": {
+    "module": "umd",
+    "declaration": true,
+    "target": "es5",
+    "outDir": "lib",
+    "rootDir": "src",
+    "moduleResolution": "node",
+    "sourceMap": true
+  },
+  "files": [
+    "references.d.ts"
+  ]
+}
