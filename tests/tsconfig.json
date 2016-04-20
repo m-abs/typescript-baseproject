@@ -4,13 +4,12 @@
     "declaration": true,
     "target": "es5",
     "noEmitOnError": true,
-    "noImplicitAny": true,
     "outDir": "../.tmp",
     "rootDir": ".",
+    "moduleResolution": "node",
     "sourceMap": false
   },
   "files": [
-    "../lib/**.d.ts",
     "../references.d.ts"
   ]
 }

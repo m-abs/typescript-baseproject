@@ -3,6 +3,7 @@
     "module": "umd",
     "declaration": true,
     "target": "es5",
+    "noEmitOnError": true,
     "outDir": "lib",
     "rootDir": "src",
     "moduleResolution": "node",
