@@ -85,6 +85,9 @@ gulp.task('test-build', ['build'], function() {
     fileGlobs['refs'],
   ])
     .pipe(ts(tsProject))
+    .pipe(rename(function(path) {
+      path.dirname = path.dirname.replace(/^tests\/?/, '');
+    }))
     .pipe(gulp.dest(testBuildDir));
 });
 
