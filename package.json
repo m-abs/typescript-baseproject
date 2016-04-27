@@ -20,8 +20,7 @@
     "watch": "gulp watch"
   },
   "license": "UNLICENSED",
-  "dependencies": {
-  },
+  "dependencies": {},
   "homepage": null,
   "devDependencies": {
     "chai": "^3.5.0",
@@ -29,13 +28,14 @@
     "gulp": "^3.9.1",
     "gulp-concat": "^2.6.0",
     "gulp-mocha": "^2.2.0",
-    "gulp-tslint": "^4.3.4",
-    "gulp-typescript": "^2.12.1",
+    "gulp-rename": "^1.2.2",
+    "gulp-tslint": "^5.0.0",
+    "gulp-typescript": "^2.13.0",
+    "in-publish": "^2.0.0",
     "mocha": "^2.4.5",
     "source-map-support": "^0.4.0",
-    "tslint": "^3.6.0",
-    "typescript": "^1.8.9",
-    "in-publish": "^2.0.0"
+    "tslint": "^3.8.1",
+    "typescript": "^1.8.10"
   },
   "typings": "lib/index.d.ts"
 }

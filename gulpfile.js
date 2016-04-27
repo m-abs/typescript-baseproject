@@ -3,6 +3,7 @@
 const pkg = require('./package.json');
 const gulp = require('gulp');
 const mocha = require('gulp-mocha');
+const rename = require('gulp-rename');
 const sourcemaps = require('gulp-sourcemaps');
 
 const builtDir = 'lib';
