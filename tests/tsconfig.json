@@ -1,6 +1,6 @@
 {
   "compilerOptions": {
-    "module": "umd",
+    "module": "commonjs",
     "declaration": true,
     "target": "es5",
     "noEmitOnError": true,
@@ -9,7 +9,10 @@
     "moduleResolution": "node",
     "sourceMap": false
   },
+  "filesGlob": [
+    "../references.d.ts",
+    "**/*.ts"
+  ],
   "files": [
-    "../references.d.ts"
   ]
 }
