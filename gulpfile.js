@@ -8,7 +8,9 @@ const sourcemaps = require('gulp-sourcemaps');
 const ts = require('gulp-typescript');
 const typescript = require('typescript');
 const tslint = require('gulp-tslint');
+const rename = require('gulp-rename');
 const del = require('del');
+const mkdirp = require('mkdirp');
 const mergeStream = require('merge-stream');
 const tsConfigGlob = require('tsconfig-glob');
 
@@ -59,12 +61,19 @@ const filesGlob = function(configPath, cb) {
 // Tasks:
 
 // Delete transpiled files from the built-dir and the test-built-dir
-gulp.task('clean', function() {
-  del.sync([
+gulp.task('clean', function(cb) {
+  del([
     buildDir,
     testBuildDir,
   ], {
     force: true
+  })
+  .then(function() {
+    mkdirp(buildDir, function() {
+      mkdirp(testBuildDir, function() {
+        cb();
+      });
+    });
   });
 });
 
@@ -117,13 +126,16 @@ gulp.task('build', [
 ]);
 
 // Transpil project tests into JavaScript-files for mocha tests below
-gulp.task('tsc:tests', ['build', 'lint:tests'], function() {
+gulp.task('tsc:tests', ['lint:tests', 'build'], function() {
   const tsProject = ts.createProject('tests/tsconfig.json', {
     typescript,
   })
 
   return tsProject.src()
     .pipe(ts(tsProject))
+    .pipe(rename(function(path) {
+      path.dirname = path.dirname.replace(/^tests\/?/, '');
+    }))
     .pipe(gulp.dest(testBuildDir));
 });
 
@@ -141,7 +153,7 @@ gulp.task('test', ['tsc:tests'], function() {
 });
 
 // Watch for changes
-gulp.task('watch', function() {
+gulp.task('watch', ['tsc'], function() {
   const watchFilesGlob = [
     'tsconfig.json',
     'tests/tsconfig.json',

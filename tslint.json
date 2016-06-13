@@ -24,6 +24,7 @@
     "no-internal-module": true,
     "no-trailing-whitespace": true,
     "no-require-imports": true,
+    "no-bitwise": true,
     "no-shadowed-variable": true,
     "no-unreachable": true,
     "no-unused-expression": true,
@@ -37,7 +38,7 @@
       true,
       "single"
     ],
-    "semicolon": true,
+    "semicolon": [true, "always"],
     "trailing-comma": {
       "multiline": "always"
     },

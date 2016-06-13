@@ -1,11 +1,9 @@
 {
   "compilerOptions": {
     "module": "commonjs",
-    "declaration": true,
+    "declaration": false,
     "target": "es5",
-    "noEmitOnError": true,
     "outDir": "../.tmp",
-    "rootDir": ".",
     "moduleResolution": "node",
     "sourceMap": false
   },
