@@ -3,4 +3,5 @@ node_modules
 built
 typings
 
-*.json*
+*.json
+!tsconfig.json
