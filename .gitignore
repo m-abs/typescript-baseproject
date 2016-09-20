@@ -37,3 +37,5 @@ Thumbs.db
 !references.d.ts
 *.ngfactory.ts
 *.shim.ts
+lib
+npm-debug.log*

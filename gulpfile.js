@@ -107,8 +107,13 @@ gulp.task('sass', ['sass:build'], function() {
     .pipe(gulp.dest(buildDir));
 });
 
+gulp.task('html', ['clean'], function() {
+  return gulp.src([`${srcDir}/**/*.html`])
+    .pipe(gulp.dest(buildDir));
+});
+
 // Transpil project src-files into JavaScript
-gulp.task('tsc', ['clean', 'lint', 'ngc', 'sass'], function() {
+gulp.task('tsc', ['clean', 'lint', 'ngc', 'sass', 'html'], function() {
   // Load projects config
   const tsProject = ts.createProject('tsconfig.json', {
     sortOutput: true, // This is required for the sourcemap to work
