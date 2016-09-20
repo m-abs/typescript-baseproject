@@ -1,7 +1,39 @@
 *.js
+*.css
+*.js.map
+*.tgz
+*.d.ts
+
 node_modules
 built
 typings
 
 *.json
 !tsconfig.json
+
+# dependencies
+/node_modules
+
+# IDEs and editors
+/.idea
+
+# misc
+/.sass-cache
+/connect.lock
+/coverage/*
+/libpeerconnection.log
+npm-debug.log
+testem.log
+/typings
+
+# e2e
+/e2e/*.js
+/e2e/*.map
+
+#System Files
+.DS_Store
+Thumbs.db
+!gulpfile.js
+!references.d.ts
+*.ngfactory.ts
+*.shim.ts

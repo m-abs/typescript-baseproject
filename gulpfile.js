@@ -3,6 +3,8 @@
 // Imports
 const pkg = require('./package.json');
 const gulp = require('gulp');
+const sass = require('gulp-sass');
+const inlineNg2Template = require('gulp-inline-ng2-template');
 const mocha = require('gulp-mocha');
 const sourcemaps = require('gulp-sourcemaps');
 const ts = require('gulp-typescript');
@@ -12,7 +14,7 @@ const rename = require('gulp-rename');
 const del = require('del');
 const mkdirp = require('mkdirp');
 const mergeStream = require('merge-stream');
-const tsConfigGlob = require('tsconfig-glob');
+const cp = require('child_process');
 
 // Const values
 const buildDir = 'lib';
@@ -23,39 +25,36 @@ const testSrcDir = 'tests';
 
 // Helper functions:
 
+const genFileGlobFromTsconfig = function(tsconfigPath) {
+  const tsConfig = require(`./${tsconfigPath}`);
+
+  const output = [
+    ...tsConfig.include,
+  ];
+
+  for (const exc of (tsConfig.exclude || [])) {
+    output.push(`!${exc}`);
+  }
+
+  return output;
+}
+
 /**
  * Lint source ts-files
  * @param tsconfigPath    path to tsconfig.json-file
  */
 const lint = function(tsconfigPath) {
-  const tsProject = ts.createProject(tsconfigPath, {
-    typescript,
-  });
+  const fileGlobs = [
+    ...genFileGlobFromTsconfig(tsconfigPath),
+    "!**/*.ngfactory.ts",
+    "!**/*.shim.ts",
+  ];
 
-  return tsProject.src()
+  return gulp.src(fileGlobs)
     .pipe(tslint())
     .pipe(tslint.report('verbose', {
       emitError: false
     }));
-};
-
-/**
- * @param configPath      path containing the tsconfig.json-file
- * @param cb              The task's callback function, this is required to avoid infinite loops
- */
-const filesGlob = function(configPath, cb) {
-  return tsConfigGlob({
-    configPath,
-    cwd: process.cwd(),
-    indent: 2
-  }, function (err) {
-    if (err) {
-      console.log('[tsConfig - err] ' + JSON.stringify(err));
-      throw err;
-    }
-
-    cb();
-  });
 };
 
 // Tasks:
@@ -65,6 +64,12 @@ gulp.task('clean', function(cb) {
   del([
     buildDir,
     testBuildDir,
+    "src/**/*.ngfactory.ts",
+    "src/**/*.shim.ts",
+    "src/**/*.js",
+    "src/**/*.css",
+    "src/**/*.js.map",
+    "src/**/*.metadata.json",
   ], {
     force: true
   })
@@ -78,29 +83,48 @@ gulp.task('clean', function(cb) {
 });
 
 // Lint project files
-gulp.task('lint', ['tsconfig:filesGlob'], function() {
+gulp.task('lint', function() {
   return lint('tsconfig.json');
 });
 
 // Lint test files
 // Depends:
 //  - tsc => Because tests imports the transpiled files from ./lib and not the source files
-//  - tsconfig:tests:filesGlob
-gulp.task('lint:tests', ['tsc', 'tsconfig:tests:filesGlob'], function() {
+gulp.task('lint:tests', ['tsc'], function() {
   return lint('tests/tsconfig.json');
 });
 
+gulp.task('sass:build', ['clean'], function() {
+  return gulp.src([`${srcDir}/**/*.scss`])
+    .pipe(sass({
+      includePaths: `${__dirname}/node_modules`,
+    }))
+    .pipe(gulp.dest(srcDir));
+});
+
+gulp.task('sass', ['sass:build'], function() {
+  return gulp.src([`${srcDir}/**/*.css`])
+    .pipe(gulp.dest(buildDir));
+});
+
 // Transpil project src-files into JavaScript
-gulp.task('tsc', ['lint'], function() {
+gulp.task('tsc', ['clean', 'lint', 'ngc', 'sass'], function() {
   // Load projects config
   const tsProject = ts.createProject('tsconfig.json', {
     sortOutput: true, // This is required for the sourcemap to work
     typescript,
   });
 
+  const fileGlobs = [
+    ...genFileGlobFromTsconfig('tsconfig.json'),
+  ];
+
   // Setup building the ts-files
-  const tsFiles = tsProject.src()
+  const tsFiles = gulp.src(fileGlobs)
     .pipe(sourcemaps.init())
+    .pipe(inlineNg2Template({
+      base: srcDir,
+    }))
     .pipe(ts(tsProject));
 
   // In gulp-typescript, .js-files and .d.ts-files end up in separate output streams
@@ -118,25 +142,27 @@ gulp.task('tsc', ['lint'], function() {
   return mergeStream(jsFiles, dtsFiles);
 });
 
+// Transpil project src-files into JavaScript
+gulp.task('ngc', ['clean'], function(cb) {
+  cp.exec('./node_modules/.bin/ngc -p tsconfig.json', function(err, output) {
+    if (err) {
+      console.error(output);
+      throw new Error('ngc failed');
+    }
+
+    cb();
+  });
+});
+
 // Wrapper task for building the project
 gulp.task('build', [
   'clean',
-  'lint',
   'tsc'
 ]);
 
 // Transpil project tests into JavaScript-files for mocha tests below
 gulp.task('tsc:tests', ['lint:tests', 'build'], function() {
-  const tsProject = ts.createProject('tests/tsconfig.json', {
-    typescript,
-  })
-
-  return tsProject.src()
-    .pipe(ts(tsProject))
-    .pipe(rename(function(path) {
-      path.dirname = path.dirname.replace(/^tests\/?/, '');
-    }))
-    .pipe(gulp.dest(testBuildDir));
+  throw new Error('running tests is not implemented');
 });
 
 // Run the mocha-tests
@@ -158,17 +184,9 @@ gulp.task('watch', ['tsc'], function() {
     'tsconfig.json',
     'tests/tsconfig.json',
     'tslint.json',
-    'typings.json',
+    ...genFileGlobFromTsconfig('tsconfig.json'),
+    ...genFileGlobFromTsconfig('tests/tsconfig.json'),
   ];
-
-  // Load the filesGlob from the two tsconfig.json-files, so we can watch them.
-  for (const glob of require('./tsconfig.json').filesGlob) {
-    watchFilesGlob.push(glob);
-  }
-
-  for (const glob of require('./tests/tsconfig.json').filesGlob) {
-    watchFilesGlob.push(`tests/${glob}`);
-  }
 
   return gulp.watch(watchFilesGlob, {
     readDelay: 250
@@ -177,19 +195,3 @@ gulp.task('watch', ['tsc'], function() {
 
 // Make watch-task our default task
 gulp.task('default', ['watch']);
-
-// Update tsconfig.json's files-array from the filesGlob
-gulp.task('tsconfig:filesGlob', function(cb) {
-  return filesGlob('.', cb);
-});
-
-// Update tests/tsconfig.json's files-array from the filesGlob
-gulp.task('tsconfig:tests:filesGlob', function(cb) {
-  return filesGlob('./tests', cb);
-});
-
-// Helper task for updating tsconfig.json and tests/tsconfig.json
-gulp.task('filesGlob', [
-  'tsconfig:filesGlob',
-  'tsconfig:tests:filesGlob'
-]);

@@ -1,19 +1,37 @@
 {
   "compilerOptions": {
-    "module": "commonjs",
     "declaration": true,
     "target": "es5",
+    "module": "commonjs",
     "noEmitOnError": true,
     "outDir": "lib",
     "rootDir": "src",
     "moduleResolution": "node",
-    "sourceMap": true
+    "sourceMap": true,
+    "emitDecoratorMetadata": true,
+    "experimentalDecorators": true,
+    "removeComments": false,
+    "noImplicitAny": false,
+    "lib": [
+      "dom",
+      "es6"
+    ],
+    "types": [
+      "node"
+    ]
   },
-  "filesGlob": [
-    "src/**/*.ts",
-    "references.d.ts"
-  ],
   "files": [
-    "references.d.ts"
-  ]
+    "src/index.ts"
+  ],
+  "include": [
+    "src/**/*.ts"
+  ],
+  "exclude": [
+    "node_modules",
+    "src/**.d.ts"
+  ],
+  "angularCompilerOptions": {
+    "genDir": ".",
+    "debug": true
+  }
 }

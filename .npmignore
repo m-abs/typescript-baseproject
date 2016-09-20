@@ -1,0 +1,14 @@
+/demo/
+/src/
+*.tgz
+tslint.json
+.clang-format
+.editorconfig
+*.spec.js
+*.spec.d.ts
+*.ts
+!*.d.ts
+!/lib/**/*.ngfactory.ts
+!/lib/**/*.shim*.ts
+/tests
+/lib/node_modules/
